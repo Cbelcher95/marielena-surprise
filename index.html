@@ -128,6 +128,54 @@
   const shareBtn = document.getElementById('shareBtn');
   const regenBtn = document.getElementById('regenBtn');
 
+  // Determine mobile heuristics
+  function isMobileView(){
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 480;
+  }
+
+  // Confetti presets
+  const confettiPresets = {
+    desktop: {
+      colors: ['#ffd6e0','#7dd3fc','#fff1f7'],
+      bursts: [
+        { particleCount: 80, spread: 70, startVelocity: 40, scalar: 1 },
+        { particleCount: 50, spread: 110, startVelocity: 30, scalar: 1 }
+      ]
+    },
+    mobile: {
+      // warmer, softer, and a couple of bolder accents for small screens; smaller particle sizes
+      colors: ['#ffd6e0','#ffb3d6','#ff9ac1','#7dd3fc','#ffd89e'],
+      bursts: [
+        { particleCount: 40, spread: 60, startVelocity: 28, gravity: 0.6, scalar: 0.8, drift: 0.2 },
+        { particleCount: 30, spread: 90, startVelocity: 18, gravity: 0.7, scalar: 0.7, drift: -0.2 },
+        // gentle stream to simulate falling confetti on mobile
+        { particleCount: 60, spread: 140, startVelocity: 10, gravity: 0.9, scalar: 0.55 }
+      ]
+    }
+  };
+
+  // Fire confetti using a preset; uses canvas-confetti available as confetti()
+  function fireConfettiPreset(preset) {
+    if (typeof confetti !== 'function') return;
+    const duration = 800; // overall window for bursts
+    const now = Date.now();
+    preset.bursts.forEach((b, i) => {
+      // stagger bursts slightly
+      setTimeout(() => {
+        confetti({
+          particleCount: b.particleCount,
+          spread: b.spread,
+          startVelocity: b.startVelocity || 30,
+          colors: preset.colors,
+          origin: { x: Math.random() * 0.6 + 0.2, y: Math.random() * 0.4 + 0.1 },
+          gravity: b.gravity || 0.5,
+          scalar: b.scalar || 1,
+          drift: b.drift || (Math.random() * 0.6 - 0.3)
+        });
+      }, i * 120);
+    });
+  }
+
   // Expanded pools (20+ thoughtful lines each)
   const pool = {
     sweet: [
@@ -300,22 +348,13 @@
     timeStamp.textContent = `Thought generated • ${formatNow()}`;
     panel.classList.remove('hidden');
     panel.classList.add('show');
-    // branded confetti (peach + pale blue), disabled on very small screens
+
+    // Choose confetti behavior based on mobile heuristics
     try{
-      if (window.innerWidth >= 360 && typeof confetti === 'function') {
-        // two bursts
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          colors: ['#ffd6e0','#7dd3fc','#fff1f7'],
-          origin: { y: 0.6 }
-        });
-        confetti({
-          particleCount: 50,
-          spread: 110,
-          colors: ['#ffd6e0','#7dd3fc','#fff1f7'],
-          origin: { x: 0.35, y: 0.6 }
-        });
+      if (isMobileView()) {
+        fireConfettiPreset(confettiPresets.mobile);
+      } else {
+        fireConfettiPreset(confettiPresets.desktop);
       }
     }catch(e){ /* confetti lib not available */ }
 
