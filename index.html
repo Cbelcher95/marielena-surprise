@@ -115,7 +115,7 @@
   </div>
 
 <script>
-// Main script: expanded pools (20+ each) + confetti (canvas-confetti)
+// Main script: expanded pools (20+ each) + confetti (canvas-confetti) + TTS
 (function(){
   const recipientName = 'Marielena';
   const templateSelect = document.getElementById('templateSelect');
@@ -275,15 +275,35 @@
     return d.toLocaleString();
   }
 
+  function playTTS(text){
+    try{
+      if ('speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-US';
+        utter.rate = 1.05;
+        utter.pitch = 1.05;
+        // prefer a female voice if available
+        const voices = window.speechSynthesis.getVoices();
+        if (voices && voices.length) {
+          const preferred = voices.find(v => /female|woman|susan|sara|samantha|victoria|alloy/i.test(v.name.toLowerCase()));
+          if (preferred) utter.voice = preferred;
+        }
+        // small delay to ensure voices are loaded in some browsers
+        setTimeout(()=>{ window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter); }, 100);
+      }
+    }catch(e){ /* ignore TTS errors */ }
+  }
+
   function showQuote(template, index){
     const text = pool[template][index];
     quoteEl.textContent = text;
     timeStamp.textContent = `Thought generated • ${formatNow()}`;
     panel.classList.remove('hidden');
     panel.classList.add('show');
-    // branded confetti (peach + pale blue), disabled on small screens
+    // branded confetti (peach + pale blue), disabled on very small screens
     try{
-      if (window.innerWidth >= 480) {
+      if (window.innerWidth >= 360 && typeof confetti === 'function') {
+        // two bursts
         confetti({
           particleCount: 80,
           spread: 70,
@@ -298,6 +318,9 @@
         });
       }
     }catch(e){ /* confetti lib not available */ }
+
+    // play short TTS: "I love you"
+    playTTS('I love you');
   }
 
   function reveal(template){
