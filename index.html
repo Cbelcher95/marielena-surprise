@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Surprise for Marielena</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- professional confetti library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <style>
   :root{
     --bg:#071026;
@@ -64,10 +66,6 @@
   .fade{transition:opacity 260ms ease,transform 260ms ease}
   .hidden{opacity:0;transform:translateY(6px);pointer-events:none}
   .show{opacity:1;transform:none}
-
-  /* gentle confetti (emoji burst) */
-  .burst{position:absolute;pointer-events:none;opacity:0;animation:burst 900ms ease-out forwards}
-  @keyframes burst{0%{opacity:1;transform:translateY(-6px) scale(0.8)}60%{transform:translateY(-28px) scale(1.08)}100%{opacity:0;transform:translateY(-60px) scale(1.2)}}
 </style>
 </head>
 <body>
@@ -117,10 +115,8 @@
     </div>
   </div>
 
-  <div id="burstRoot"></div>
-
 <script>
-// Main script: professional polish + no-repeat generator
+// Main script: expanded pools (20+ each) + confetti (canvas-confetti)
 (function(){
   const recipientName = 'Marielena';
   const templateSelect = document.getElementById('templateSelect');
@@ -132,44 +128,118 @@
   const copyBtn = document.getElementById('copyBtn');
   const shareBtn = document.getElementById('shareBtn');
   const regenBtn = document.getElementById('regenBtn');
-  const burstRoot = document.getElementById('burstRoot');
 
-  // Pools of thoughtful lines per template — multiple options
+  // Expanded pools (20+ thoughtful lines each)
   const pool = {
     sweet: [
       `Hey ${recipientName} ❤️\n\nYou make ordinary moments feel extraordinary.`,
       `Dear ${recipientName},\n\nA quick message: you are my favorite today and every day.`,
       `For ${recipientName}: just a little note — your light makes everything better.`,
       `Marielena — your smile is a soft sunrise in a busy world.`,
-      `To ${recipientName}: I noticed you today, and I smiled because of you.`
+      `To ${recipientName}: I noticed you today, and I smiled because of you.`,
+      `A little thought for ${recipientName}: thank you for turning small moments into memories.`,
+      `${recipientName}, you make my day kinder without even trying.`,
+      `Short and true: I appreciate you, ${recipientName}.`,
+      `You are quietly brilliant, ${recipientName} — and I see it.`,
+      `A warm hello to ${recipientName} — you are cherished.`,
+      `${recipientName}, you bring color to my plainest hours.`,
+      `Tiny reminder, ${recipientName}: you are loved today.`,
+      `For ${recipientName}: your presence is my favorite comfort.`,
+      `${recipientName}, thank you for being steady and kind.`,
+      `Simple truth: life is better with you, ${recipientName}.`,
+      `A gentle note — you make the little things feel important, ${recipientName}.`,
+      `${recipientName}, you are the calm in my storm.`,
+      `Thinking of you, ${recipientName}, and smiling for no reason.`,
+      `Because of you, ${recipientName}, ordinary turns into special.`,
+      `You are a small miracle to me, ${recipientName}.`
     ],
     playful: [
       `To ${recipientName}, the champion of stolen fries and stolen hearts. 🍟❤️`,
       `${recipientName}! If you were a song, I'd put you on repeat.`,
       `Warning, ${recipientName}: hugging you may cause extreme happiness.`,
       `PS ${recipientName}: You owe me one hug — for scientific purposes.`,
-      `Hey ${recipientName}, you make my to-do list feel like a love letter.`
+      `Hey ${recipientName}, you make my to-do list feel like a love letter.`,
+      `${recipientName}, your laugh should have its own fan club.`,
+      `I'd share my fries with you any day, ${recipientName} — that's real love.`,
+      `You’re the best kind of distraction, ${recipientName}.`,
+      `${recipientName}, your jokes are my favorite soundtrack.`,
+      `If smiles were currency, ${recipientName}, I’d be rich because of you.`,
+      `You break the 'serious' mode — thank you, ${recipientName}.`,
+      `Careful: being near ${recipientName} increases happiness levels.`,
+      `${recipientName}, never stop being delightfully you.`,
+      `I nominate ${recipientName} for CEO of Cheerfulness.`,
+      `You make the simplest things ridiculously fun, ${recipientName}.`,
+      `Note: ${recipientName} is a certified laugh supplier.`,
+      `Just so you know, ${recipientName}, you make silly look beautiful.`,
+      `${recipientName}, I'm keeping you for moral support and snacks.`,
+      `If life were a game, ${recipientName}, you'd be the best power-up.`,
+      `Plot twist: ${recipientName} is the main character of my favorite story.`
     ],
     poetic: [
       `${recipientName}, you are my favorite hello and my calmest harbor.`,
       `Like moonlight through the trees — that's the way you arrive, ${recipientName}.`,
       `If days were verses, you would be the chorus I never tire of, ${recipientName}.`,
       `Your laughter is the line I read when I want the world to pause, ${recipientName}.`,
-      `For ${recipientName}: a quiet poem — your presence is the punctuation of my best sentences.`
+      `For ${recipientName}: a quiet poem — your presence is the punctuation of my best sentences.`,
+      `You are the hush after a long day, ${recipientName}.`,
+      `${recipientName}, you are the soft footstep that makes home feel like a place.`,
+      `When I close my eyes, I find you in the gentlest lines, ${recipientName}.`,
+      `You are the unexpected rhyme in my favorite poem, ${recipientName}.`,
+      `Your voice is the map back to everything that matters, ${recipientName}.`,
+      `Like a steady lighthouse, ${recipientName}, you guide me warmly.`,
+      `${recipientName}, you turn ordinary light into gold.`,
+      `The world feels a little more splendid because of you, ${recipientName}.`,
+      `Your quiet is loud in the best way, ${recipientName}.`,
+      `Tenderly: ${recipientName}, you are my calm favorite.`,
+      `You fit into my sentences like a beloved adjective, ${recipientName}.`,
+      `If I could write a sky, it would be your name, ${recipientName}.`,
+      `Each laugh from you is a soft meteor across my evening, ${recipientName}.`,
+      `You are the gentle tension that lets songs begin, ${recipientName}.`,
+      `If I kept one secret, ${recipientName}, it would be how much I treasure you.`
     ],
     heartfelt: [
       `Hey ${recipientName},\n\nI'm grateful for your kindness and how you make home feel like a person.`,
       `${recipientName}, thank you for staying — for the small things and the enormous ones.`,
       `I don't say it enough: you make me better by simply being you, ${recipientName}.`,
       `Because of you, ordinary moments become memories. Thank you, ${recipientName}.`,
-      `To ${recipientName}: your patience, your laugh, your light—I'm so grateful.`
+      `To ${recipientName}: your patience, your laugh, your light—I'm so grateful.`,
+      `${recipientName}, your support is the quiet strength of my days.`,
+      `I carry your kindness with me, ${recipientName}, like a warm cardigan.`,
+      `For all the times you listen: thank you, ${recipientName}.`,
+      `You make hard things softer, ${recipientName}.`,
+      `I am endlessly thankful for you, ${recipientName}.`,
+      `Your empathy is a gift I never expected, ${recipientName}.`,
+      `${recipientName}, you are the reason I believe in good mornings.`,
+      `I notice the ways you say 'I care' without saying it, ${recipientName}.`,
+      `With you, the world feels more possible, ${recipientName}.`,
+      `I am grateful for your steady presence, ${recipientName}.`,
+      `Thank you for being my quiet champion, ${recipientName}.`,
+      `You are the anchor that softens my storms, ${recipientName}.`,
+      `Because of you, simple days feel like blessings, ${recipientName}.`,
+      `Every day with you adds a gentle best line to my life, ${recipientName}.`,
+      `If gratitude had a voice, it would say your name—${recipientName}.`
     ],
     funny: [
       `If loving you were a contest, ${recipientName}, I'd definitely be overqualified. 😂`,
       `They say laughter is the best medicine — with you, I'm cured every day, ${recipientName}.`,
       `${recipientName}, you're the reason my phone has too many photos and not enough storage.`,
       `I'd brave the worst pun festival for you, ${recipientName}. That's real love.`,
-      `You + me + pizza = true happiness. Also, ${recipientName}, you steal the blanket.`
+      `You + me + pizza = true happiness. Also, ${recipientName}, you steal the blanket.`,
+      `${recipientName}, you're the official supplier of my good moods.`,
+      `If I had to choose between dessert or you, I'd choose dessert — said no one about ${recipientName}.`,
+      `You make my bad jokes feel like classics, ${recipientName}.`,
+      `Caution: hugging ${recipientName} may result in sudden grinning.`,
+      `I admire your talent for making ordinary things hilariously memorable, ${recipientName}.`,
+      `Would fight a dragon for you, ${recipientName}. Would also ask it to return my socks.`,
+      `${recipientName}, your laugh is my favorite notification sound.`,
+      `You make every plan secretly better, ${recipientName}.`,
+      `I tried to be serious once. It lasted 3 minutes near ${recipientName}.`,
+      `Official record: ${recipientName} wins the award for best smile.`,
+      `We should form a club: Fans of ${recipientName}. Membership perks: smiles.`,
+      `If charm had a recipe, ${recipientName} would be the secret spice.`,
+      `You're my favorite plot twist, ${recipientName}.`,
+      `Public service announcement: ${recipientName} causes excessive joy.`,
+      `Pro tip: spending time with ${recipientName} improves everything.`
     ]
   };
 
@@ -212,21 +282,19 @@
     timeStamp.textContent = `Thought generated • ${formatNow()}`;
     panel.classList.remove('hidden');
     panel.classList.add('show');
-    // small burst effect
-    spawnBurst();
-  }
-
-  // spawn small emoji burst near panel
-  function spawnBurst(){
-    const emojis = ['✨','💖','🌟','💫','🥰'];
-    const el = document.createElement('div');
-    el.className = 'burst';
-    el.style.left = (20 + Math.random()*60)+'%';
-    el.style.top = (40 + Math.random()*30)+'%';
-    el.style.fontSize = (18 + Math.random()*22)+'px';
-    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-    document.body.appendChild(el);
-    setTimeout(()=> el.remove(), 1000);
+    // professional confetti
+    try{
+      confetti({
+        particleCount: 60,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+      confetti({
+        particleCount: 40,
+        spread: 100,
+        origin: { x: 0.2, y: 0.6 }
+      });
+    }catch(e){ /* confetti lib not available */ }
   }
 
   function reveal(template){
@@ -236,8 +304,8 @@
   }
 
   // wire buttons
-  revealBtn.addEventListener('click', ()=>{ reveal(); backdropHidden(); });
-  randomBtn.addEventListener('click', ()=>{ const keys = Object.keys(pool); const rand = keys[Math.floor(Math.random()*keys.length)]; reveal(rand); backdropHidden(); });
+  revealBtn.addEventListener('click', ()=>{ reveal(); });
+  randomBtn.addEventListener('click', ()=>{ const keys = Object.keys(pool); const rand = keys[Math.floor(Math.random()*keys.length)]; reveal(rand); });
   regenBtn.addEventListener('click', ()=>{ reveal(templateSelect.value); });
 
   copyBtn.addEventListener('click', async ()=>{
@@ -253,9 +321,6 @@
       try{ await navigator.clipboard.writeText(text); alert('Share not available — message copied to clipboard.'); }catch(e){ alert('Share/copy not available.'); }
     }
   });
-
-  // Hide the modal backdrop (we keep no blocking modal now)
-  function backdropHidden(){ /* placeholder if we had modal */ }
 
   // auto-reveal one on load for convenience (but will not repeat due to storage)
   setTimeout(()=>{ reveal(templateSelect.value); }, 500);
