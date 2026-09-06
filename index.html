@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>System Diagnostic — Surprise (Marielena)</title>
+<style>
+  :root { --bg:#0b0f19; --accent:#3b82f6; --muted:#64748b; --card:#0f1724; --radius:12px; --panel:#071026; }
+  html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--accent);}
+  .center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;}
+  .message{text-align:center;max-width:720px;width:100%;}
+  .status{margin-bottom:12px;color:var(--accent);font-size:18px;}
+  .muted{color:var(--muted);font-size:14px;margin-bottom:18px;}
+
+  /* Modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;}
+  .modal{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);padding:18px;width:calc(100% - 48px);max-width:420px;box-shadow:0 8px 30px rgba(2,6,23,0.6);color:var(--accent);}
+  .modal h1{margin:0 0 8px 0;font-size:18px;}
+  .modal p{margin:0 0 12px 0;color:var(--muted);font-size:14px;}
+  .label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+  .select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--accent);margin-bottom:10px}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{background:var(--accent);color:#041226;border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+  .btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+  small{display:block;color:var(--muted);margin-top:8px}
+
+  /* Bottom panel */
+  .bottom-panel{position:fixed;left:12px;right:12px;bottom:12px;background:var(--panel);border-radius:12px;padding:12px;box-shadow:0 12px 40px rgba(2,6,23,0.6);color:#e6f0ff;z-index:10000;display:none;max-width:960px;margin:0 auto;transform:translateY(0);transition:transform 200ms ease}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .panel-head h2{margin:0;font-size:16px;color:#ffd6e0}
+  .panel-body{margin-top:8px;max-height:36vh;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.01);padding:12px}
+  pre.code{white-space:pre-wrap;word-break:break-word;margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;color:#e6f0ff}
+  .panel-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .pill{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+  .pill.copy{background:#3b82f6;color:#041226}
+  .pill.share{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#dbeafe}
+  .pill.edit{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .close-x{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
+
+  @media (max-width:420px){
+    .modal{padding:14px;border-radius:10px}
+    pre.code{font-size:15px}
+    .bottom-panel{left:8px;right:8px;bottom:8px;padding:10px}
+  }
+</style>
+</head>
+<body>
+  <main class="center" aria-hidden="true">
+    <div class="message">
+      <p class="status">🔄 Initializing security handshake...</p>
+      <p class="muted">Do not close this window.</p>
+    </div>
+  </main>
+
+  <!-- Modal (template selection only; name is fixed to Marielena) -->
+  <div id="modalBackdrop" class="modal-backdrop" hidden>
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+      <h1 id="modalTitle">🚨 System Alert</h1>
+      <p>Affection detected for Marielena. Choose a template then tap Reveal — the message will appear at the bottom of this page (no redirects). The recipient name is fixed as "Marielena".</p>
+
+      <label class="label" for="templateSelect">Template</label>
+      <select id="templateSelect" class="select" aria-label="Choose message template">
+        <option value="sweet">Short &amp; Sweet</option>
+        <option value="playful">Playful</option>
+        <option value="poetic">Poetic</option>
+        <option value="heartfelt">Heartfelt</option>
+        <option value="funny">Funny</option>
+      </select>
+
+      <div class="actions" style="margin-top:8px;">
+        <button id="revealBtn" class="btn">Reveal</button>
+        <button id="dismissBtn" class="btn secondary">Dismiss</button>
+      </div>
+
+      <small>Note: name cannot be changed — message will always use "Marielena".</small>
+    </div>
+  </div>
+
+  <!-- Bottom panel: message shown here, no redirects -->
+  <div id="bottomPanel" class="bottom-panel" role="region" aria-live="polite" aria-label="Appreciation message panel">
+    <div class="panel-head">
+      <h2>💌 Appreciation message</h2>
+      <div>
+        <button id="closePanel" class="close-x" aria-label="Close panel">&times;</button>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <pre id="messageCode" class="code" aria-label="Message code block">// Your message will appear here</pre>
+    </div>
+
+    <div class="panel-actions">
+      <button id="copyBtn" class="pill copy">Copy</button>
+      <button id="shareBtn" class="pill share">Share</button>
+      <button id="editBtn" class="pill edit">Edit</button>
+    </div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const backdrop = document.getElementById('modalBackdrop');
+  const modal = document.getElementById('modal');
+  const revealBtn = document.getElementById('revealBtn');
+  const dismissBtn = document.getElementById('dismissBtn');
+  const select = document.getElementById('templateSelect');
+
+  const bottomPanel = document.getElementById('bottomPanel');
+  const messageCode = document.getElementById('messageCode');
+  const copyBtn = document.getElementById('copyBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const editBtn = document.getElementById('editBtn');
+  const closePanel = document.getElementById('closePanel');
+
+  // Fixed recipient name
+  const recipientName = 'Marielena';
+
+  // Templates (editable)
+  const templates = {
+    sweet: `Hey ${recipientName} ❤️\n\nJust wanted to say you make my days brighter and my heart happier. Thank you for being you. I love you.`,
+    playful: `To the girl who stole my fries and my heart ${recipientName} 🍟❤️\n\nYou make every little moment feel like a favorite song. Can't wait to hug you later.`,
+    poetic: `You are my favorite hello and my hardest goodbye, ${recipientName}.\n\nYour laugh is my morning sun and your hand is where I rest. I love you more than words can catch.`,
+    heartfelt: `Hey ${recipientName},\n\nI don't say it enough, but I'm so grateful for you — for your kindness, your silly jokes, and how you believe in me. You're my safe place and my biggest smile. Thank you for being you. 💖`,
+    funny: `If loving you was a crime, ${recipientName}, I'd probably ask for a lighter sentence — just so I could brag about it in the yard. 😂\n\nSeriously though, you're amazing.`
+  };
+
+  // Open modal on load
+  backdrop.hidden = false;
+  modal.focus();
+
+  // Compose message for fixed name
+  function buildMessage(key) {
+    return templates[key] || templates.heartfelt;
+  }
+
+  // Show bottom panel with message (no redirect)
+  function showPanel(text) {
+    messageCode.textContent = text;
+    bottomPanel.style.display = 'block';
+    bottomPanel.style.transform = 'translateY(0)';
+    setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 120);
+  }
+
+  // Reveal button behaviour
+  revealBtn.addEventListener('click', function () {
+    const choice = select.value || 'heartfelt';
+    const result = buildMessage(choice);
+    backdrop.hidden = true;
+    showPanel(result);
+  });
+
+  // Auto-reveal on load with default template
+  setTimeout(() => {
+    select.value = 'heartfelt';
+    const result = buildMessage(select.value);
+    backdrop.hidden = true;
+    showPanel(result);
+  }, 300);
+
+  dismissBtn.addEventListener('click', function () {
+    backdrop.hidden = true;
+  });
+
+  // Copy to clipboard
+  copyBtn.addEventListener('click', async function () {
+    const text = messageCode.textContent || '';
+    try {
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = 'Copied ✓';
+      setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+    } catch (e) {
+      const range = document.createRange();
+      range.selectNodeContents(messageCode);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      alert('Copy failed automatically — text selected. Please copy manually.');
+    }
+  });
+
+  // Web Share API (opens native share sheet; not a redirect)
+  shareBtn.addEventListener('click', async function () {
+    const text = messageCode.textContent || '';
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'A little message', text });
+      } catch (err) {
+        // user cancelled or share failed
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('Share not supported. Message copied — paste it into Messages or any app.');
+      } catch (e) {
+        alert('Sharing not supported and copy failed. Please select and copy manually.');
+      }
+    }
+  });
+
+  // Edit re-opens modal (template only)
+  editBtn.addEventListener('click', function () {
+    backdrop.hidden = false;
+    select.focus();
+  });
+
+  // Close bottom panel
+  closePanel.addEventListener('click', function () {
+    bottomPanel.style.display = 'none';
+  });
+
+  // Keyboard accessibility: Esc closes modal or panel
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') {
+      if (!backdrop.hidden) backdrop.hidden = true;
+      else if (bottomPanel.style.display === 'block') bottomPanel.style.display = 'none';
+    }
+  });
+
+  // Basic focus trap inside modal for keyboard users
+  modal.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Tab') {
+      const focusable = [select, revealBtn, dismissBtn];
+      const idx = focusable.indexOf(document.activeElement);
+      if (ev.shiftKey && idx === 0) { ev.preventDefault(); focusable[focusable.length - 1].focus(); }
+      if (!ev.shiftKey && idx === focusable.length - 1) { ev.preventDefault(); focusable[0].focus(); }
+    }
+  });
+
+  // ----- SWIPE-UP TO DISMISS ON MOBILE -----
+  let startY = null;
+  let currentTranslateY = 0;
+  let touchingPanel = false;
+
+  bottomPanel.addEventListener('touchstart', function (e) {
+    if (bottomPanel.style.display !== 'block') return;
+    touchingPanel = true;
+    startY = e.touches[0].clientY;
+    bottomPanel.style.transition = 'none';
+  }, {passive: true});
+
+  bottomPanel.addEventListener('touchmove', function (e) {
+    if (!touchingPanel || startY === null) return;
+    const y = e.touches[0].clientY;
+    const delta = y - startY;
+    if (delta < 0) {
+      currentTranslateY = Math.max(delta, -window.innerHeight);
+      bottomPanel.style.transform = `translateY(${currentTranslateY}px)`;
+    }
+  }, {passive: true});
+
+  bottomPanel.addEventListener('touchend', function (e) {
+    if (!touchingPanel) return;
+    touchingPanel = false;
+    bottomPanel.style.transition = 'transform 200ms ease';
+    if (currentTranslateY < -80) {
+      bottomPanel.style.transform = `translateY(-150%)`;
+      setTimeout(() => { bottomPanel.style.display = 'none'; bottomPanel.style.transform = 'translateY(0)'; }, 220);
+    } else {
+      bottomPanel.style.transform = 'translateY(0)';
+    }
+    startY = null;
+    currentTranslateY = 0;
+  }, {passive: true});
+
+  // mouse drag for desktop testing
+  let mouseDown = false;
+  bottomPanel.addEventListener('mousedown', (e) => {
+    mouseDown = true;
+    startY = e.clientY;
+    bottomPanel.style.transition = 'none';
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!mouseDown || startY === null) return;
+    const delta = e.clientY - startY;
+    if (delta < 0) {
+      currentTranslateY = Math.max(delta, -window.innerHeight);
+      bottomPanel.style.transform = `translateY(${currentTranslateY}px)`;
+    }
+  });
+  window.addEventListener('mouseup', () => {
+    if (!mouseDown) return;
+    mouseDown = false;
+    bottomPanel.style.transition = 'transform 200ms ease';
+    if (currentTranslateY < -80) {
+      bottomPanel.style.transform = `translateY(-150%)`;
+      setTimeout(() => { bottomPanel.style.display = 'none'; bottomPanel.style.transform = 'translateY(0)'; }, 220);
+    } else {
+      bottomPanel.style.transform = 'translateY(0)';
+    }
+    startY = null;
+    currentTranslateY = 0;
+  });
+});
+</script>
+</body>
+</html>
