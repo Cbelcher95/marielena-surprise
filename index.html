@@ -10,7 +10,7 @@
   /* moved the status lower so it doesn't sit behind the modal */
   .center{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding-top:40vh;padding-left:1rem;padding-right:1rem;box-sizing:border-box}
   .message{text-align:center;max-width:720px;width:100%;}
-  .status{margin-bottom:12px;color:var(--accent);font-size:18px;}
+  .status{display:none;margin-bottom:12px;color:var(--accent);font-size:18px;} /* hidden until Reveal */
   .muted{color:var(--muted);font-size:14px;margin-bottom:18px;}
 
   /* Modal */
@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Landing popup elements
   const welcomePopup = document.getElementById('welcomePopup');
   const popupClose = document.getElementById('popupClose');
+  const statusEl = document.querySelector('.status');
 
   // Fixed recipient name
   const recipientName = 'Marielena';
@@ -151,6 +152,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Show bottom panel with message (no redirect)
   function showPanel(text) {
+    // reveal the status when message is shown
+    if (statusEl) statusEl.style.display = 'block';
     messageCode.textContent = text;
     bottomPanel.style.display = 'block';
     bottomPanel.style.transform = 'translateY(0)';
