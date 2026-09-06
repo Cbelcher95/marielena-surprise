@@ -7,7 +7,8 @@
 <style>
   :root { --bg:#0b0f19; --accent:#3b82f6; --muted:#64748b; --card:#0f1724; --radius:12px; --panel:#071026; }
   html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--accent);} 
-  .center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;}
+  /* moved the status lower so it doesn't sit behind the modal */
+  .center{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding-top:40vh;padding-left:1rem;padding-right:1rem;box-sizing:border-box}
   .message{text-align:center;max-width:720px;width:100%;}
   .status{margin-bottom:12px;color:var(--accent);font-size:18px;}
   .muted{color:var(--muted);font-size:14px;margin-bottom:18px;}
@@ -47,6 +48,7 @@
     pre.code{font-size:15px}
     .bottom-panel{left:8px;right:8px;bottom:8px;padding:10px}
     .popup{left:12px;right:12px;top:12px;border-radius:10px}
+    .center{padding-top:55vh}
   }
 </style>
 </head>
