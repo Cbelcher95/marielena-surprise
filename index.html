@@ -3,333 +3,266 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>System Diagnostic — Surprise (Marielena)</title>
+<title>Surprise for Marielena</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0b0f19; --accent:#3b82f6; --muted:#64748b; --card:#0f1724; --radius:12px; --panel:#071026; }
-  html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--accent);} 
-  /* moved the status lower so it doesn't sit behind the modal */
-  .center{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding-top:40vh;padding-left:1rem;padding-right:1rem;box-sizing:border-box}
-  .message{text-align:center;max-width:720px;width:100%;}
-  .status{display:none;margin-bottom:12px;color:var(--accent);font-size:18px;} /* hidden until Reveal */
-  .muted{color:var(--muted);font-size:14px;margin-bottom:18px;}
-
-  /* Modal */
-  .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;}
-  .modal{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);padding:18px;width:calc(100% - 48px);max-width:420px;box-shadow:0 8px 30px rgba(2,6,23,0.6);color:var(--accent);} 
-  .modal h1{margin:0 0 8px 0;font-size:18px;}
-  .modal p{margin:0 0 12px 0;color:var(--muted);font-size:14px;}
-  .label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
-  .select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--accent);margin-bottom:10px}
-  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-  .btn{background:var(--accent);color:#041226;border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-  .btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
-
-  /* Bottom panel */
-  .bottom-panel{position:fixed;left:12px;right:12px;bottom:12px;background:var(--panel);border-radius:12px;padding:12px;box-shadow:0 12px 40px rgba(2,6,23,0.6);color:#e6f0ff;z-index:10000;display:none;max-width:960px;margin:0 auto;transform:translateY(0);transition:transform 200ms ease}
-  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .panel-head h2{margin:0;font-size:16px;color:#ffd6e0}
-  .panel-body{margin-top:8px;max-height:36vh;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.01);padding:12px}
-  pre.code{white-space:pre-wrap;word-break:break-word;margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;color:#e6f0ff}
-  .panel-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-  .pill{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
-  .pill.copy{background:#3b82f6;color:#041226}
-  .pill.share{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#dbeafe}
-  .pill.edit{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-  .close-x{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
-
-  /* Landing popup (non-blocking) */
-  .popup{position:fixed;top:18px;right:18px;background:linear-gradient(180deg, rgba(59,130,246,0.12), rgba(59,130,246,0.06));padding:12px 14px;border-radius:12px;color:#dbeafe;box-shadow:0 10px 30px rgba(2,6,23,0.6);z-index:11000;display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(-8px);transition:opacity 220ms ease,transform 220ms ease}
-  .popup.show{opacity:1;transform:translateY(0)}
-  .popup .text{font-size:14px;color:#e6f0ff}
-  .popup .close{background:transparent;border:none;color:var(--muted);font-weight:700;cursor:pointer}
-
-  @media (max-width:420px){
-    .modal{padding:14px;border-radius:10px}
-    pre.code{font-size:15px}
-    .bottom-panel{left:8px;right:8px;bottom:8px;padding:10px}
-    .popup{left:12px;right:12px;top:12px;border-radius:10px}
-    .center{padding-top:55vh}
+  :root{
+    --bg:#071026;
+    --card:#0f1724;
+    --muted:#9aa6bd;
+    --accent:#ffd6e0;
+    --accent-2:#7dd3fc;
+    --glass: rgba(255,255,255,0.03);
+    --radius:14px;
   }
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#040615);color:var(--accent);-webkit-font-smoothing:antialiased}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box}
+
+  .card{
+    width:100%;max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));border-radius:var(--radius);padding:22px;box-shadow:0 18px 60px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03);
+  }
+
+  header{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#041226;font-weight:700}
+  h1{font-size:18px;margin:0;color:#ffe6f0}
+  p.lead{margin:4px 0 0 0;color:var(--muted);font-size:13px}
+
+  .controls{display:flex;gap:12px;align-items:center;margin-top:6px}
+  select,button{
+    background:var(--glass);border:1px solid rgba(255,255,255,0.04);color:var(--accent);padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer
+  }
+  button.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041226}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+  /* popup hint */
+  .popup{position:fixed;top:20px;right:20px;background:var(--card);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(2,6,23,0.6);font-size:13px;color:var(--muted);z-index:12;display:flex;gap:8px;align-items:center}
+
+  /* message panel */
+  .panel{margin-top:18px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.004));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:10px}
+  .meta{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .meta .stamp{color:var(--muted);font-size:13px}
+  .quote{background:rgba(255,255,255,0.01);padding:14px;border-radius:10px;color:#eaf6ff;min-height:84px;font-size:16px;line-height:1.45;white-space:pre-wrap}
+
+  .panel-actions{display:flex;gap:10px;align-items:center}
+  .pill{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .pill.copy{background:#3b82f6;color:#041226}
+  .pill.share{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .pill.edit{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+  /* small footer */
+  footer{margin-top:14px;color:var(--muted);font-size:13px;text-align:center}
+
+  /* responsive */
+  @media (max-width:640px){
+    .card{padding:16px}
+    .logo{width:42px;height:42px}
+    .quote{font-size:15px}
+    .controls{flex-direction:column;align-items:stretch}
+  }
+
+  /* fade transitions */
+  .fade{transition:opacity 260ms ease,transform 260ms ease}
+  .hidden{opacity:0;transform:translateY(6px);pointer-events:none}
+  .show{opacity:1;transform:none}
+
+  /* gentle confetti (emoji burst) */
+  .burst{position:absolute;pointer-events:none;opacity:0;animation:burst 900ms ease-out forwards}
+  @keyframes burst{0%{opacity:1;transform:translateY(-6px) scale(0.8)}60%{transform:translateY(-28px) scale(1.08)}100%{opacity:0;transform:translateY(-60px) scale(1.2)}}
 </style>
 </head>
 <body>
-  <main class="center" aria-hidden="true">
-    <div class="message">
-      <p class="status">🔄 Initializing security handshake...</p>
-      <p class="muted">Do not close this window.</p>
-    </div>
-  </main>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <div class="logo">M</div>
+        <div>
+          <h1>Surprise for Marielena</h1>
+          <p class="lead">A little thought, generated each time you reveal. Crafted with care.</p>
+        </div>
+      </header>
 
-  <!-- Landing popup (non-blocking) -->
-  <div id="welcomePopup" class="popup" role="status" aria-live="polite" hidden>
-    <div class="text">Surprise! Tap Reveal to see a message for Marielena 💌</div>
-    <button id="popupClose" class="close" aria-label="Dismiss popup">×</button>
-  </div>
+      <div class="controls">
+        <label for="templateSelect" style="color:var(--muted);font-weight:600">Template</label>
+        <select id="templateSelect" aria-label="Choose template">
+          <option value="sweet">Short & Sweet</option>
+          <option value="playful">Playful</option>
+          <option value="poetic">Poetic</option>
+          <option value="heartfelt">Heartfelt</option>
+          <option value="funny">Funny</option>
+        </select>
 
-  <!-- Modal (template selection only; recipient fixed as Marielena) -->
-  <div id="modalBackdrop" class="modal-backdrop" hidden>
-    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-      <h1 id="modalTitle">🚨 System Alert</h1>
-      <p>Affection detected for Marielena. Choose a template then tap Reveal — the message will appear at the bottom of this page (no redirects).</p>
+        <button id="revealBtn" class="primary">Reveal</button>
+        <button id="randomBtn" class="ghost" title="Reveal a different message">Surprise me</button>
 
-      <label class="label" for="templateSelect">Template</label>
-      <select id="templateSelect" class="select" aria-label="Choose message template">
-        <option value="sweet">Short &amp; Sweet</option>
-        <option value="playful">Playful</option>
-        <option value="poetic">Poetic</option>
-        <option value="heartfelt">Heartfelt</option>
-        <option value="funny">Funny</option>
-      </select>
-
-      <div class="actions" style="margin-top:8px;">
-        <button id="revealBtn" class="btn">Reveal</button>
-        <button id="dismissBtn" class="btn secondary">Dismiss</button>
+        <div style="flex:1"></div>
+        <button id="editBtn" class="ghost">Edit template (view)</button>
       </div>
 
-    </div>
-  </div>
-
-  <!-- Bottom panel: message shown here, no redirects -->
-  <div id="bottomPanel" class="bottom-panel" role="region" aria-live="polite" aria-label="Appreciation message panel">
-    <div class="panel-head">
-      <h2>💌 Appreciation message</h2>
-      <div>
-        <button id="closePanel" class="close-x" aria-label="Close panel">&times;</button>
+      <div id="panel" class="panel fade hidden" aria-live="polite">
+        <div class="meta">
+          <div class="stamp">Recipient: Marielena</div>
+          <div id="timeStamp" class="stamp"></div>
+        </div>
+        <div id="quote" class="quote"></div>
+        <div class="panel-actions">
+          <button id="copyBtn" class="pill copy">Copy</button>
+          <button id="shareBtn" class="pill share">Share</button>
+          <button id="regenBtn" class="pill edit">New (no repeat)</button>
+        </div>
       </div>
-    </div>
 
-    <div class="panel-body">
-      <pre id="messageCode" class="code" aria-label="Message code block">// Your message will appear here</pre>
-    </div>
-
-    <div class="panel-actions">
-      <button id="copyBtn" class="pill copy">Copy</button>
-      <button id="shareBtn" class="pill share">Share</button>
-      <button id="editBtn" class="pill edit">Edit</button>
+      <footer>
+        Generated with a little thought — each reveal shows a different line until the set is exhausted.
+      </footer>
     </div>
   </div>
+
+  <div id="burstRoot"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const backdrop = document.getElementById('modalBackdrop');
-  const modal = document.getElementById('modal');
+// Main script: professional polish + no-repeat generator
+(function(){
+  const recipientName = 'Marielena';
+  const templateSelect = document.getElementById('templateSelect');
   const revealBtn = document.getElementById('revealBtn');
-  const dismissBtn = document.getElementById('dismissBtn');
-  const select = document.getElementById('templateSelect');
-
-  const bottomPanel = document.getElementById('bottomPanel');
-  const messageCode = document.getElementById('messageCode');
+  const randomBtn = document.getElementById('randomBtn');
+  const panel = document.getElementById('panel');
+  const quoteEl = document.getElementById('quote');
+  const timeStamp = document.getElementById('timeStamp');
   const copyBtn = document.getElementById('copyBtn');
   const shareBtn = document.getElementById('shareBtn');
-  const editBtn = document.getElementById('editBtn');
-  const closePanel = document.getElementById('closePanel');
+  const regenBtn = document.getElementById('regenBtn');
+  const burstRoot = document.getElementById('burstRoot');
 
-  // Landing popup elements
-  const welcomePopup = document.getElementById('welcomePopup');
-  const popupClose = document.getElementById('popupClose');
-  const statusEl = document.querySelector('.status');
-
-  // Fixed recipient name
-  const recipientName = 'Marielena';
-
-  // Templates (editable)
-  const templates = {
-    sweet: `Hey ${recipientName} ❤️\n\nJust wanted to say you make my days brighter and my heart happier. Thank you for being you. I love you.`,
-    playful: `To the girl who stole my fries and my heart ${recipientName} 🍟❤️\n\nYou make every little moment feel like a favorite song. Can't wait to hug you later.`,
-    poetic: `You are my favorite hello and my hardest goodbye, ${recipientName}.\n\nYour laugh is my morning sun and your hand is where I rest. I love you more than words can catch.`,
-    heartfelt: `Hey ${recipientName},\n\nI don't say it enough, but I'm so grateful for you — for your kindness, your silly jokes, and how you believe in me. You're my safe place and my biggest smile. Thank you for being you. 💖`,
-    funny: `If loving you was a crime, ${recipientName}, I'd probably ask for a lighter sentence — just so I could brag about it in the yard. 😂\n\nSeriously though, you're amazing.`
+  // Pools of thoughtful lines per template — multiple options
+  const pool = {
+    sweet: [
+      `Hey ${recipientName} ❤️\n\nYou make ordinary moments feel extraordinary.`,
+      `Dear ${recipientName},\n\nA quick message: you are my favorite today and every day.`,
+      `For ${recipientName}: just a little note — your light makes everything better.`,
+      `Marielena — your smile is a soft sunrise in a busy world.`,
+      `To ${recipientName}: I noticed you today, and I smiled because of you.`
+    ],
+    playful: [
+      `To ${recipientName}, the champion of stolen fries and stolen hearts. 🍟❤️`,
+      `${recipientName}! If you were a song, I'd put you on repeat.`,
+      `Warning, ${recipientName}: hugging you may cause extreme happiness.`,
+      `PS ${recipientName}: You owe me one hug — for scientific purposes.`,
+      `Hey ${recipientName}, you make my to-do list feel like a love letter.`
+    ],
+    poetic: [
+      `${recipientName}, you are my favorite hello and my calmest harbor.`,
+      `Like moonlight through the trees — that's the way you arrive, ${recipientName}.`,
+      `If days were verses, you would be the chorus I never tire of, ${recipientName}.`,
+      `Your laughter is the line I read when I want the world to pause, ${recipientName}.`,
+      `For ${recipientName}: a quiet poem — your presence is the punctuation of my best sentences.`
+    ],
+    heartfelt: [
+      `Hey ${recipientName},\n\nI'm grateful for your kindness and how you make home feel like a person.`,
+      `${recipientName}, thank you for staying — for the small things and the enormous ones.`,
+      `I don't say it enough: you make me better by simply being you, ${recipientName}.`,
+      `Because of you, ordinary moments become memories. Thank you, ${recipientName}.`,
+      `To ${recipientName}: your patience, your laugh, your light—I'm so grateful.`
+    ],
+    funny: [
+      `If loving you were a contest, ${recipientName}, I'd definitely be overqualified. 😂`,
+      `They say laughter is the best medicine — with you, I'm cured every day, ${recipientName}.`,
+      `${recipientName}, you're the reason my phone has too many photos and not enough storage.`,
+      `I'd brave the worst pun festival for you, ${recipientName}. That's real love.`,
+      `You + me + pizza = true happiness. Also, ${recipientName}, you steal the blanket.`
+    ]
   };
 
-  // Open modal on load
-  backdrop.hidden = false;
-  modal.focus();
-
-  // Compose message for fixed name
-  function buildMessage(key) {
-    return templates[key] || templates.heartfelt;
+  // localStorage key prefix to persist which indices used per template
+  const USED_KEY = 'marielena_used_indices_v1';
+  function loadUsed() {
+    try { return JSON.parse(localStorage.getItem(USED_KEY) || '{}'); }
+    catch(e){ return {}; }
   }
+  function saveUsed(obj) { localStorage.setItem(USED_KEY, JSON.stringify(obj)); }
 
-  // Show bottom panel with message (no redirect)
-  function showPanel(text) {
-    // reveal the status when message is shown
-    if (statusEl) statusEl.style.display = 'block';
-    messageCode.textContent = text;
-    bottomPanel.style.display = 'block';
-    bottomPanel.style.transform = 'translateY(0)';
-    setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 120);
-  }
-
-  // Reveal button behaviour
-  revealBtn.addEventListener('click', function () {
-    const choice = select.value || 'heartfelt';
-    const result = buildMessage(choice);
-    backdrop.hidden = true;
-    showPanel(result);
-  });
-
-  // Auto-reveal on load with default template
-  setTimeout(() => {
-    select.value = 'heartfelt';
-    const result = buildMessage(select.value);
-    backdrop.hidden = true;
-    showPanel(result);
-  }, 300);
-
-  dismissBtn.addEventListener('click', function () {
-    backdrop.hidden = true;
-  });
-
-  // Copy to clipboard
-  copyBtn.addEventListener('click', async function () {
-    const text = messageCode.textContent || '';
-    try {
-      await navigator.clipboard.writeText(text);
-      copyBtn.textContent = 'Copied ✓';
-      setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-    } catch (e) {
-      const range = document.createRange();
-      range.selectNodeContents(messageCode);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      alert('Copy failed automatically — text selected. Please copy manually.');
+  // get a non-repeating index for template; resets when exhausted
+  function pickIndex(template){
+    const arr = pool[template] || pool.heartfelt;
+    const used = loadUsed();
+    used[template] = used[template] || [];
+    const usedSet = new Set(used[template]);
+    if (usedSet.size >= arr.length) {
+      // reset
+      used[template] = [];
+      saveUsed(used);
+      usedSet.clear();
     }
+    // available indices
+    const avail = arr.map((_,i)=>i).filter(i => !usedSet.has(i));
+    const idx = avail[Math.floor(Math.random()*avail.length)];
+    used[template].push(idx);
+    saveUsed(used);
+    return idx;
+  }
+
+  function formatNow(){
+    const d = new Date();
+    return d.toLocaleString();
+  }
+
+  function showQuote(template, index){
+    const text = pool[template][index];
+    quoteEl.textContent = text;
+    timeStamp.textContent = `Thought generated • ${formatNow()}`;
+    panel.classList.remove('hidden');
+    panel.classList.add('show');
+    // small burst effect
+    spawnBurst();
+  }
+
+  // spawn small emoji burst near panel
+  function spawnBurst(){
+    const emojis = ['✨','💖','🌟','💫','🥰'];
+    const el = document.createElement('div');
+    el.className = 'burst';
+    el.style.left = (20 + Math.random()*60)+'%';
+    el.style.top = (40 + Math.random()*30)+'%';
+    el.style.fontSize = (18 + Math.random()*22)+'px';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    document.body.appendChild(el);
+    setTimeout(()=> el.remove(), 1000);
+  }
+
+  function reveal(template){
+    const t = template || templateSelect.value || 'heartfelt';
+    const idx = pickIndex(t);
+    showQuote(t, idx);
+  }
+
+  // wire buttons
+  revealBtn.addEventListener('click', ()=>{ reveal(); backdropHidden(); });
+  randomBtn.addEventListener('click', ()=>{ const keys = Object.keys(pool); const rand = keys[Math.floor(Math.random()*keys.length)]; reveal(rand); backdropHidden(); });
+  regenBtn.addEventListener('click', ()=>{ reveal(templateSelect.value); });
+
+  copyBtn.addEventListener('click', async ()=>{
+    try{ await navigator.clipboard.writeText(quoteEl.textContent || ''); copyBtn.textContent='Copied ✓'; setTimeout(()=>copyBtn.textContent='Copy',1400);}catch(e){ alert('Copy failed — select the text and copy manually.'); }
   });
 
-  // Web Share API (opens native share sheet; not a redirect)
-  shareBtn.addEventListener('click', async function () {
-    const text = messageCode.textContent || '';
+  shareBtn.addEventListener('click', async ()=>{
+    const text = (quoteEl.textContent || '') + '\n\n— ' + recipientName;
     if (navigator.share) {
-      try {
-        await navigator.share({ title: 'A little message', text });
-      } catch (err) {
-        // user cancelled or share failed
-      }
+      try{ await navigator.share({ title: 'A little thought for Marielena', text }); }
+      catch(_){}
     } else {
-      try {
-        await navigator.clipboard.writeText(text);
-        alert('Share not supported. Message copied — paste it into Messages or any app.');
-      } catch (e) {
-        alert('Sharing not supported and copy failed. Please select and copy manually.');
-      }
+      try{ await navigator.clipboard.writeText(text); alert('Share not available — message copied to clipboard.'); }catch(e){ alert('Share/copy not available.'); }
     }
   });
 
-  // Edit re-opens modal (template only)
-  editBtn.addEventListener('click', function () {
-    backdrop.hidden = false;
-    select.focus();
-  });
+  // Hide the modal backdrop (we keep no blocking modal now)
+  function backdropHidden(){ /* placeholder if we had modal */ }
 
-  // Close bottom panel
-  closePanel.addEventListener('click', function () {
-    bottomPanel.style.display = 'none';
-  });
+  // auto-reveal one on load for convenience (but will not repeat due to storage)
+  setTimeout(()=>{ reveal(templateSelect.value); }, 500);
 
-  // Keyboard accessibility: Esc closes modal or panel
-  document.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Escape') {
-      if (!backdrop.hidden) backdrop.hidden = true;
-      else if (bottomPanel.style.display === 'block') bottomPanel.style.display = 'none';
-    }
-  });
-
-  // Basic focus trap inside modal for keyboard users
-  modal.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Tab') {
-      const focusable = [select, revealBtn, dismissBtn];
-      const idx = focusable.indexOf(document.activeElement);
-      if (ev.shiftKey && idx === 0) { ev.preventDefault(); focusable[focusable.length - 1].focus(); }
-      if (!ev.shiftKey && idx === focusable.length - 1) { ev.preventDefault(); focusable[0].focus(); }
-    }
-  });
-
-  // ----- SWIPE-UP TO DISMISS ON MOBILE -----
-  let startY = null;
-  let currentTranslateY = 0;
-  let touchingPanel = false;
-
-  bottomPanel.addEventListener('touchstart', function (e) {
-    if (bottomPanel.style.display !== 'block') return;
-    touchingPanel = true;
-    startY = e.touches[0].clientY;
-    bottomPanel.style.transition = 'none';
-  }, {passive: true});
-
-  bottomPanel.addEventListener('touchmove', function (e) {
-    if (!touchingPanel || startY === null) return;
-    const y = e.touches[0].clientY;
-    const delta = y - startY;
-    if (delta < 0) {
-      currentTranslateY = Math.max(delta, -window.innerHeight);
-      bottomPanel.style.transform = `translateY(${currentTranslateY}px)`;
-    }
-  }, {passive: true});
-
-  bottomPanel.addEventListener('touchend', function (e) {
-    if (!touchingPanel) return;
-    touchingPanel = false;
-    bottomPanel.style.transition = 'transform 200ms ease';
-    if (currentTranslateY < -80) {
-      bottomPanel.style.transform = `translateY(-150%)`;
-      setTimeout(() => { bottomPanel.style.display = 'none'; bottomPanel.style.transform = 'translateY(0)'; }, 220);
-    } else {
-      bottomPanel.style.transform = 'translateY(0)';
-    }
-    startY = null;
-    currentTranslateY = 0;
-  }, {passive: true});
-
-  // mouse drag for desktop testing
-  let mouseDown = false;
-  bottomPanel.addEventListener('mousedown', (e) => {
-    mouseDown = true;
-    startY = e.clientY;
-    bottomPanel.style.transition = 'none';
-  });
-  window.addEventListener('mousemove', (e) => {
-    if (!mouseDown || startY === null) return;
-    const delta = e.clientY - startY;
-    if (delta < 0) {
-      currentTranslateY = Math.max(delta, -window.innerHeight);
-      bottomPanel.style.transform = `translateY(${currentTranslateY}px)`;
-    }
-  });
-  window.addEventListener('mouseup', () => {
-    if (!mouseDown) return;
-    mouseDown = false;
-    bottomPanel.style.transition = 'transform 200ms ease';
-    if (currentTranslateY < -80) {
-      bottomPanel.style.transform = `translateY(-150%)`;
-      setTimeout(() => { bottomPanel.style.display = 'none'; bottomPanel.style.transform = 'translateY(0)'; }, 220);
-    } else {
-      bottomPanel.style.transform = 'translateY(0)';
-    }
-    startY = null;
-    currentTranslateY = 0;
-  });
-
-  // ----- POPUP: show + hide logic -----
-  function showPopup() {
-    if (!welcomePopup) return;
-    welcomePopup.hidden = false;
-    // small timeout to allow CSS transition
-    requestAnimationFrame(() => welcomePopup.classList.add('show'));
-    // auto-hide after 6s
-    setTimeout(hidePopup, 6000);
-  }
-  function hidePopup() {
-    if (!welcomePopup) return;
-    welcomePopup.classList.remove('show');
-    setTimeout(() => { welcomePopup.hidden = true; }, 240);
-  }
-  popupClose && popupClose.addEventListener('click', hidePopup);
-
-  // show popup shortly after load (after modal auto-reveal starts)
-  setTimeout(showPopup, 500);
-
-});
+  // expose quick debug to window
+  window._marielena = {reveal, pool};
+})();
 </script>
 </body>
 </html>
