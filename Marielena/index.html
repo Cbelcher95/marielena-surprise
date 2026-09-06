@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For Marielena</title>
+<style>
+  :root{--bg:#071026;--accent:#ffd6e0;--muted:#cbd5e1}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
+  .card{max-width:720px;width:100%;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:20px;border-radius:14px;color:#e6f0ff;box-shadow:0 12px 40px rgba(2,6,23,0.6)}
+  h1{margin:0 0 6px 0;color:var(--accent);font-size:20px}
+  p{margin:12px 0;font-size:18px;line-height:1.4}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .copy{background:#3b82f6;color:#041226}
+  .sms{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#dbeafe}
+  small{display:block;color:#9aa6bd;margin-top:10px}
+</style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>Just for you, Marielena 💌</h1>
+    <p id="message">Hey Marielena,
+
+I don't say it enough, but I'm so grateful for you — for your kindness, your silly jokes, and how you believe in me. You're my safe place and my biggest smile. Thank you for being you. 💖</p>
+
+    <div class="actions">
+      <button id="copyBtn" class="copy">Copy message</button>
+      <button id="smsBtn" class="sms">Open in Messages</button>
+    </div>
+    <small>If "Open in Messages" doesn't work on your device, copy and paste the message into your texting app.</small>
+  </div>
+
+<script>
+  const raw = document.getElementById('message').innerText.trim();
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(raw); alert('Message copied!'); }
+    catch (e) { alert('Copy failed — please select and copy manually.'); }
+  });
+
+  document.getElementById('smsBtn').addEventListener('click', () => {
+    const encoded = encodeURIComponent(raw);
+    // sms:?body= works on many mobile browsers; try sms and fallback to sms://
+    const href = `sms:&body=${encoded}`;
+    window.location.href = href;
+  });
+</script>
+</body>
+</html>
