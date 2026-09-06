@@ -36,10 +36,17 @@
   .pill.edit{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
   .close-x{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
 
+  /* Landing popup (non-blocking) */
+  .popup{position:fixed;top:18px;right:18px;background:linear-gradient(180deg, rgba(59,130,246,0.12), rgba(59,130,246,0.06));padding:12px 14px;border-radius:12px;color:#dbeafe;box-shadow:0 10px 30px rgba(2,6,23,0.6);z-index:11000;display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(-8px);transition:opacity 220ms ease,transform 220ms ease}
+  .popup.show{opacity:1;transform:translateY(0)}
+  .popup .text{font-size:14px;color:#e6f0ff}
+  .popup .close{background:transparent;border:none;color:var(--muted);font-weight:700;cursor:pointer}
+
   @media (max-width:420px){
     .modal{padding:14px;border-radius:10px}
     pre.code{font-size:15px}
     .bottom-panel{left:8px;right:8px;bottom:8px;padding:10px}
+    .popup{left:12px;right:12px;top:12px;border-radius:10px}
   }
 </style>
 </head>
@@ -50,6 +57,12 @@
       <p class="muted">Do not close this window.</p>
     </div>
   </main>
+
+  <!-- Landing popup (non-blocking) -->
+  <div id="welcomePopup" class="popup" role="status" aria-live="polite" hidden>
+    <div class="text">Surprise! Tap Reveal to see a message for Marielena 💌</div>
+    <button id="popupClose" class="close" aria-label="Dismiss popup">×</button>
+  </div>
 
   <!-- Modal (template selection only; recipient fixed as Marielena) -->
   <div id="modalBackdrop" class="modal-backdrop" hidden>
@@ -108,6 +121,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const shareBtn = document.getElementById('shareBtn');
   const editBtn = document.getElementById('editBtn');
   const closePanel = document.getElementById('closePanel');
+
+  // Landing popup elements
+  const welcomePopup = document.getElementById('welcomePopup');
+  const popupClose = document.getElementById('popupClose');
 
   // Fixed recipient name
   const recipientName = 'Marielena';
@@ -287,6 +304,26 @@ document.addEventListener('DOMContentLoaded', function () {
     startY = null;
     currentTranslateY = 0;
   });
+
+  // ----- POPUP: show + hide logic -----
+  function showPopup() {
+    if (!welcomePopup) return;
+    welcomePopup.hidden = false;
+    // small timeout to allow CSS transition
+    requestAnimationFrame(() => welcomePopup.classList.add('show'));
+    // auto-hide after 6s
+    setTimeout(hidePopup, 6000);
+  }
+  function hidePopup() {
+    if (!welcomePopup) return;
+    welcomePopup.classList.remove('show');
+    setTimeout(() => { welcomePopup.hidden = true; }, 240);
+  }
+  popupClose && popupClose.addEventListener('click', hidePopup);
+
+  // show popup shortly after load (after modal auto-reveal starts)
+  setTimeout(showPopup, 500);
+
 });
 </script>
 </body>
